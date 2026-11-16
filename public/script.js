@@ -16,3 +16,11 @@ function addMessage(text, sender) {
   return content;
 }
 
+chatForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const message = userInput.value.trim();
+  if (!message) {
+    return;
+  }
+
+  
