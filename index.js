@@ -6,6 +6,11 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Model bisa diganti lewat environment variable OPENROUTER_MODEL (tanpa ubah kode).
+// Cek daftar model terbaru di https://openrouter.ai/models
+const OPENROUTER_MODEL =
+  process.env.OPENROUTER_MODEL || "nvidia/nemotron-3.5-super-vl:free";
+
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -23,22 +28,27 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
+    if (!process.env.OPENROUTER_API_KEY) {
+      return res.status(500).json({
+        error: "OPENROUTER_API_KEY belum diatur di .env atau Environment Variables",
+      });
+    }
+
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
 
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.GEMINI_API_KEY}`,
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
         },
 
         body: JSON.stringify({
-          model: "gemini",
+          model: OPENROUTER_MODEL,
           messages: messages,
           temperature: 0.7,
-          max_tokens: 2048,
-          reasoning_effort: "low",
+          max_tokens: 1000,
           stream: true,
         }),
       },
@@ -47,7 +57,7 @@ app.post("/api/chat", async (req, res) => {
     if (!response.ok) {
       const errorData = await response.text();
 
-      console.error("Gemini Error:", errorData);
+      console.error("OpenRouter Error:", errorData);
 
       return res.status(response.status).json({
         error: errorData,
