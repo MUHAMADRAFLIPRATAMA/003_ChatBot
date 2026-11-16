@@ -23,4 +23,25 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
-    
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.GEMINI_API_KEY}`,
+        },
+
+        body: JSON.stringify({
+          model: "gemini",
+          messages: messages,
+          temperature: 0.7,
+          max_tokens: 2048,
+          reasoning_effort: "low",
+          stream: true,
+        }),
+      },
+    );
+
+   
