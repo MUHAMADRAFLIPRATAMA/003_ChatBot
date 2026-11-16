@@ -23,4 +23,19 @@ chatForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  
+  // ========================
+  // Tampilkan pesan user
+  // ========================
+  addMessage(message, "user");
+  // Simpan pesan user
+  messages.push({
+    role: "user",
+    content: message,
+  });
+  // Kosongkan input
+  userInput.value = "";
+  // Disable input sementara
+  userInput.disabled = true;
+  const button = chatForm.querySelector("button");
+  button.disabled = true;
+  button.textContent = "Menunggu...";
